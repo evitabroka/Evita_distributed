@@ -1,0 +1,339 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    
+</head>
+<body>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="Scripts/jquery-3.4.1.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            if (sessionStorage.getItem('AccessTokenProject') == null) {
+                window.location.href = "Login.html";
+            }
+        });
+        //facbook login function
+        window.fbAsyncInit = function () {
+            FB.init({
+                
+                appId: '1859972711072289',
+                cookie: true,
+                xfbml: true,
+                version: 'v7.0'
+            });
+
+            FB.AppEvents.logPageView();
+
+        };
+
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) { return; }
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+
+        function checkLoginState() {
+            FB.getLoginStatus(function (response) {
+                statusChangeCallback(response);
+            });
+        }
+        function statusChangeCallback(response) {
+            if (response.status === 'connected') {
+                sessionStorage.setItem("AccesTokenForFB", response.authResponse.accessToken);
+                console.log(sessionStorage.getItem("AccesTokenForFB"));
+
+
+
+            } else {
+                document.getElementById('feed').innerHTML = "";
+          
+                setElements(false);
+                document.getElementById('status').innerHTML =
+                    'You need to log in!';
+
+
+
+            }
+        }
+        //---------------------------------------------------------------
+        //-----------geting data----------------
+        function GetAllData() {
+            $.ajax({
+                url: '/api/Fb/PreferencesOfProfile?Token=' + sessionStorage.getItem("AccesTokenForFB") + '&useremail=' + sessionStorage.getItem("EmailforUser") + '&Booleanemail=' + $("#email").prop("checked") + '&BooleanBirthday=' + $("#birthdate").prop("checked") + '&BooleanName=' + $("#name").prop("checked"),
+                method: 'GET',
+
+
+                headers: {
+                    'Authorization': 'Bearer '
+                        + sessionStorage.getItem("AccessTokenProject")
+                },
+                success: function (data) {
+                    console.log(data);
+                    ProfileBuilder(data);
+                },
+                error: function (jQXHR) {
+                    // if token expired
+                    if (jQXHR.status == "401") {
+                        $('#errorModal').modal('show');
+                    }
+                    else {
+                        $('#divErrorText').text(jqXHR.responseText);
+                        $('#divError').show('fade');
+                    }
+                }
+            });
+
+
+        
+        
+            $.ajax({
+                url: '/api/Fb/getFeed?FbToken=' + sessionStorage.getItem("AccesTokenForFB"),
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer '
+                        + sessionStorage.getItem("AccessTokenProject")
+                },
+                success: function (data) {
+                    console.log(data);
+                    Images(data);
+                    let showout = '<h1>Text from the feed</h1>'
+                    for (let o in data.data) {
+                        showout += `
+
+                                <div class = "card">
+                                ${data.data[o].message}
+                                </div>
+
+                        `;
+                        document.getElementById('feed').innerHTML = showout;
+                    }
+
+
+                },
+                error: function (jQXHR) {
+                    // If status code is 401, access token expired, so
+                    // redirect the user to the login page
+                    if (jQXHR.status == "401") {
+                        $('#errorModal').modal('show');
+                    }
+                    else {
+                        $('#divErrorText').text(jqXHR.responseText);
+                        $('#divError').show('fade');
+                    }
+                }
+            });
+
+            $.ajax({
+                url: '/api/Fb/getlikes?FbToken=' + sessionStorage.getItem("AccesTokenForFB"),
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer '
+                        + sessionStorage.getItem("AccessTokenProject")
+                },
+                success: function (data) {
+                    console.log(data);
+
+
+                    let showout = '<h1>Liked pages</h1>'
+                    for (let o in data.data) {
+                        showout += `
+                                <div class = "card">
+                                ${data.data[o].name}
+                                </div>
+
+                        `;
+                        document.getElementById('like').innerHTML = showout;
+                    }
+
+
+                },
+                error: function (jQXHR) {
+                    // If status code is 401, access token expired, so
+                    // redirect the user to the login page
+                    if (jQXHR.status == "401") {
+                        $('#errorModal').modal('show');
+                    }
+                    else {
+                        $('#divErrorText').text(jqXHR.responseText);
+                        $('#divError').show('fade');
+                    }
+                }
+            });
+
+
+        };
+        function Images(data) {
+            let showout = '<h1>Photos</h1>'
+            for (let o in data.data) {
+                if (data.data[o].id) {
+                    $.ajax({
+                        url: '/api/Fb/Getimage?FbToken=' + sessionStorage.getItem("AccesTokenForFB") + '&postid=' + data.data[o].id,
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer '
+                                + sessionStorage.getItem("AccessTokenProject")
+                        },
+                        success: function (datafromFb) {
+
+                            if (datafromFb.full_picture != null) {
+                                console.log(data);
+                                showout += `
+
+                                    <dive class = "web">
+                                        <h3>${data.data[o].message}</h3>
+                                        <img style="max-width: 100%"" src=" ${datafromFb.full_picture}">
+
+                                    `;
+                                document.getElementById('img').innerHTML = showout;
+                            }
+                        },
+                        error: function (jQXHR) {
+                            // If status code is 401, access token expired, so
+                            // redirect the user to the login page
+                            if (jQXHR.status == "401") {
+                                $('#errorModal').modal('show');
+                            }
+                            else {
+                                $('#divErrorText').text(jqXHR.responseText);
+                                $('#divError').show('fade');
+                            }
+                        }
+                    });
+
+                }
+            }
+        };
+        function ProfileBuilder(feed) {
+            let output = ` <h3>Profile</h3>
+                <label> Name</label>`;
+            if (feed.name != null) {
+                 output +=` <input type="checkbox" value="True" id="name" class="prefcheckbox" />`;
+            }
+            else {
+                 output +=`<input type="checkbox" value="" id="name" class="prefcheckbox" />`;
+            }
+            output += `  <label> Email</label>`;
+            if (feed.email != null) {
+                output += `    <input type="checkbox" value="true" id="email" class="prefcheckbox" />`;
+            }
+            else {
+                output += `   <input type="checkbox" value="" id="email" class="prefcheckbox" />`;
+            }
+           
+         
+             
+            output += `  <label>Birth Date</label>`;
+            if (feed.email != null) {
+                output += `<input type="checkbox" value="true" id="birthdate" class="prefcheckbox" />`;
+            }
+            else {
+                output += ` <input type="checkbox" value="" id="birthdate" class="prefcheckbox" />`;
+            }
+                
+;
+            if (feed.name != null) {
+              
+                output += `  <div class="well">
+                 Email:  ${feed.name}
+               </div>  `;
+            }
+            if (feed.email != null) {
+             
+
+                output += ` <div class="well">
+                 Name:  ${feed.email}
+               </div>  `;
+            }
+        
+
+
+
+            if (feed.birthday != null) {
+            
+                output += `  <div class="well">
+                 Birth Date:  ${feed.birthday}
+               </div>  `;
+            }
+
+            document.getElementById('profiel').innerHTML = output;
+        }
+        
+      
+
+        $(document).on('click', '.prefcheckbox', function () {
+
+            console.log(sessionStorage.getItem("UserEmail"));
+            $.ajax({
+                url: '/api/Fb/PreferencesOfProfile?Token=' + sessionStorage.getItem("AccesTokenForFB") + '&useremail=' + sessionStorage.getItem("EmailforUser") + '&Booleanemail=' + $("#email").prop("checked") + '&BooleanBirthday=' + $("#birthdate").prop("checked") + '&BooleanName=' + $("#name").prop("checked"),
+                method: 'GET',
+
+
+                headers: {
+                    'Authorization': 'Bearer '
+                        + sessionStorage.getItem("AccessTokenProject")
+                },
+                success: function (data) {
+                    console.log(data);
+                    ProfileBuilder(data);
+                },
+                error: function (jQXHR) {
+                    // If status code is 401, access token expired, so
+                    // redirect the user to the login page
+                    if (jQXHR.status == "401") {
+                        $('#errorModal').modal('show');
+                    }
+                    else {
+                        $('#divErrorText').text(jqXHR.responseText);
+                        $('#divError').show('fade');
+                    }
+                }
+            });
+
+
+        }
+        );
+
+
+
+
+
+    </script>
+    <fb:login-button scope="public_profile,email"
+                     onlogin="checkLoginState();">
+    </fb:login-button>
+
+    <button onclick="GetAllData()">Show feed</button>
+    <div id="profiel">
+        <h3>Profile</h3>
+        <label> Name</label> 
+        <input type="radio" value="" id="name" class="checkbox" />
+        <label> Email</label> 
+        <input type="radio" value="" id="email" class="prefcheckbox" />
+        <label>Birth Date</label>
+        <input type="radio" value="" id="birthdate" class="prefcheckbox" />'
+
+    </div>
+    <style>
+        .card {
+            border-style: ridge;
+            transition: 0.3s;
+            width: 40%;
+            padding: 2px 16px;
+        }
+    </style>
+   
+      <div class="card" id="img"> </div>
+   
+
+    <div id="feed"> </div>
+    <div id="like"> </div>
+</body>
+</html>
