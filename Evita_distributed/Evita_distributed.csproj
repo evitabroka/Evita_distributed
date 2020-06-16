@@ -286,10 +286,10 @@
     <Compile Include="Controllers\FacebookApiController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProfilePreferenceModelsController.cs" />
-    <Compile Include="Controllers\TwitterController.cs" />
+    <Compile Include="Controllers\TwitterAPIController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Endpoints\FbEndpoints.cs" />
-    <Compile Include="Endpoints\Twitter.cs" />
+    <Compile Include="Endpoints\TwEndpoint.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -376,8 +376,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\ProfilePreference\" />
-    <Folder Include="Views\TwitterApi\" />
-    <Folder Include="Views\Twitter\" />
+    <Folder Include="Views\TwitterAPI\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
