@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using System.Web.Http;
 using static Evita_distributed.JsonParser.JsonParser;
 
@@ -15,7 +16,7 @@ namespace Evita_distributed.Controllers
     [RoutePrefix("api/Fb")]
     public class FacebookApiController : ApiController
     {
-        
+        public ApplicationDbContext db =new  ApplicationDbContext();
         protected Restclient AppClient = new Restclient();
         private FbEndpoints Enpoiint;
 
@@ -67,6 +68,32 @@ namespace Evita_distributed.Controllers
             return Feedd;
 
         }
+
+        [HttpGet]
+        [Route("PreferencesOfProfilefFirst")]
+
+        public FbUserProfileModel PreferencesOfProfilefFirst(string Token, string useremail)
+        {
+            var user =  db.Users.FirstOrDefault(x=>x.Email == useremail);
+            var curentuser = db.ProfilePreferenceModels.FirstOrDefault(x => x.userID == user.Id);
+
+            Enpoiint.fBAccesToken = Token;
+            AppClient.endpoint = Enpoiint.GetProfileEndpoint(curentuser.name, curentuser.birthday, curentuser.email);
+
+
+
+            String Data = AppClient.Request(HttpVerb.GET, Enpoiint.EndpointURL());
+            JSONParser<FbUserProfileModel> jsonp = new JSONParser<FbUserProfileModel>();
+            FbUserProfileModel fbm = new FbUserProfileModel();
+            fbm = jsonp.parseJson(Data);
+            return fbm;
+
+
+
+
+        }
+
+
         [HttpGet]
         [Route("PreferencesOfProfile")]
         

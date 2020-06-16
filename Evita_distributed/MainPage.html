@@ -20,7 +20,7 @@
         //facbook login function
         window.fbAsyncInit = function () {
             FB.init({
-                
+
                 appId: '1859972711072289',
                 cookie: true,
                 xfbml: true,
@@ -30,7 +30,7 @@
             FB.AppEvents.logPageView();
 
         };
- 
+
         (function (d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0];
             if (d.getElementById(id)) { return; }
@@ -54,7 +54,7 @@
 
             } else {
                 document.getElementById('feed').innerHTML = "";
-          
+
                 setElements(false);
                 document.getElementById('status').innerHTML =
                     'You need to log in!';
@@ -67,7 +67,7 @@
         //-----------geting data----------------
         function GetAllData() {
             $.ajax({
-                url: '/api/Fb/PreferencesOfProfile?Token=' + sessionStorage.getItem("AccesTokenForFB") + '&useremail=' + sessionStorage.getItem("EmailforUser") + '&Booleanemail=' + $("#email").prop("checked") + '&BooleanBirthday=' + $("#birthdate").prop("checked") + '&BooleanName=' + $("#name").prop("checked"),
+                url: '/api/Fb/PreferencesOfProfilefFirst?Token=' + sessionStorage.getItem("AccesTokenForFB") + '&useremail=' + sessionStorage.getItem("EmailforUser"),
                 method: 'GET',
 
 
@@ -92,8 +92,8 @@
             });
 
 
-        
-        
+
+
             $.ajax({
                 url: '/api/Fb/getFeed?FbToken=' + sessionStorage.getItem("AccesTokenForFB"),
                 method: 'GET',
@@ -108,11 +108,11 @@
                     for (let o in data.data) {
                         showout += `
 
-                                <div class = "card">
-                                ${data.data[o].message}
-                                </div>
+                                        <div class = "card">
+                                        ${data.data[o].message}
+                                        </div>
 
-                        `;
+                                `;
                         document.getElementById('feed').innerHTML = showout;
                     }
 
@@ -145,11 +145,11 @@
                     let showout = '<h1>Liked pages</h1>'
                     for (let o in data.data) {
                         showout += `
-                                <div class = "card">
-                                ${data.data[o].name}
-                                </div>
+                                        <div class = "card">
+                                        ${data.data[o].name}
+                                        </div>
 
-                        `;
+                                `;
                         document.getElementById('like').innerHTML = showout;
                     }
 
@@ -187,11 +187,11 @@
                                 console.log(data);
                                 showout += `
 
-                                    <dive class = "web">
-                                        <h3>${data.data[o].message}</h3>
-                                        <img style="max-width: 100%"" src=" ${datafromFb.full_picture}">
+                                            <dive class = "web">
+                                                <h3>${data.data[o].message}</h3>
+                                                <img style="max-width: 100%"" src=" ${datafromFb.full_picture}">
 
-                                    `;
+                                            `;
                                 document.getElementById('img').innerHTML = showout;
                             }
                         },
@@ -212,61 +212,83 @@
             }
         };
         function ProfileBuilder(feed) {
-            let output = ` <h3>Profile</h3>
-                <label> Name</label>`;
-            if (feed.name != null) {
-                 output +=` <input type="checkbox" value="True" id="name" class="prefcheckbox" />`;
-            }
-            else {
-                 output +=`<input type="checkbox" value="" id="name" class="prefcheckbox" />`;
-            }
-            output += `  <label> Email</label>`;
-            if (feed.email != null) {
-                output += `    <input type="checkbox" value="true" id="email" class="prefcheckbox" />`;
-            }
-            else {
-                output += `   <input type="checkbox" value="" id="email" class="prefcheckbox" />`;
-            }
-           
-         
-             
-            output += `  <label>Birth Date</label>`;
-            if (feed.email != null) {
-                output += `<input type="checkbox" value="true" id="birthdate" class="prefcheckbox" />`;
-            }
-            else {
-                output += ` <input type="checkbox" value="" id="birthdate" class="prefcheckbox" />`;
-            }
-                
-;
-            if (feed.name != null) {
-              
-                output += `  <div class="well">
-                 Email:  ${feed.name}
-               </div>  `;
-            }
-            if (feed.email != null) {
-             
 
-                output += ` <div class="well">
-                 Name:  ${feed.email}
-               </div>  `;
+            let output = '<h3>Profile</h3>';
+            output += '<label> Name</label>';
+            if (feed.name != null) {
+                output += ` <input type="checkbox" value="" id="name" class="prefcheckbox "checked />`;
+
+
+
+            } else { output += ` <input type="checkbox" value="" id="name" class="prefcheckbox" />`; }
+
+            output += `<label> Email</label> `;
+            if (feed.email != null) {
+                output += ` <input type="checkbox" value="" id="email" class="prefcheckbox "checked />`;
+
+
+
+            } else { output += ` <input type="checkbox" value="" id="email" class="prefcheckbox" />`; }
+
+
+
+            output += `<label> Birthday</label> `;
+            if (feed.birthday != null) {
+                output += ` <input type="checkbox" value="" id="birthdate" class="prefcheckbox "checked />`;
+
+
+
+            } else {
+                output += `<input type="checkbox" value="" id="birthdate" class="prefcheckbox" />`;
             }
-        
+            if (feed.name != null) {
+                //   $("#name").prop("checked", true);
+                output += `  <div class="well">
+                         Name:  ${feed.name}
+                       </div>`;
+            }
+            if (feed.email != null) {
+                //  $("#email").attr('checked', 'checked');
+                output += ` <div class="well">
+                         Email:  ${feed.email}
+                       </div>  `;
+            }
 
 
 
             if (feed.birthday != null) {
-            
+                //  $("#birthdate").attr('checked', 'checked');
                 output += `  <div class="well">
-                 Birth Date:  ${feed.birthday}
-               </div>  `;
+                         Birth Date:  ${feed.birthday}
+                       </div>  `;
             }
+
+
 
             document.getElementById('profiel').innerHTML = output;
         }
-        
-      
+
+
+
+        function buildlikes(feed) {
+            let output = '<h3>Pages Liked</h3>';
+
+            for (let i in feed.data) {
+                if (feed.data[i].name) {
+                    output += `
+                      <div class="well">
+                        ${feed.data[i].name}
+                      </div>
+                    `;
+                }
+            }
+
+
+
+            document.getElementById('likes').innerHTML = output;
+        }
+
+
 
         $(document).on('click', '.prefcheckbox', function () {
 
@@ -311,16 +333,7 @@
     </fb:login-button>
 
     <button onclick="GetAllData()">Show feed</button>
-    <div id="profiel">
-        <h3>Profile</h3>
-        <label> Name</label> 
-        <input type="radio" value="" id="name" class="checkbox" />
-        <label> Email</label> 
-        <input type="radio" value="" id="email" class="prefcheckbox" />
-        <label>Birth Date</label>
-        <input type="radio" value="" id="birthdate" class="prefcheckbox" />'
-
-    </div>
+    <div id="profiel"></div>
     <style>
         .card {
             border-style: ridge;
@@ -329,11 +342,173 @@
             padding: 2px 16px;
         }
     </style>
-   
-      <div class="card" id="img"> </div>
-   
+
+    <div class="card" id="img"> </div>
+
 
     <div id="feed"> </div>
     <div id="like"> </div>
-</body>
+
+
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-app.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.15.1/firebase-auth.js"></script>
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+         https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-analytics.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyChPAZs6vf-CC4i7YlMV0iPt08zkDT0qEs",
+            authDomain: "rare-chiller-275016.firebaseapp.com",
+            databaseURL: "https://rare-chiller-275016.firebaseio.com",
+            projectId: "rare-chiller-275016",
+            storageBucket: "rare-chiller-275016.appspot.com",
+            messagingSenderId: "811427766471",
+            appId: "1:811427766471:web:a6eb691bed727e405b9ee2",
+            measurementId: "G-TF0LM1KZDD"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+    </script>
+
+    <script>
+
+
+
+        function signin() {
+
+            var provider = new firebase.auth.TwitterAuthProvider();
+            firebase.auth().useDeviceLanguage();
+            firebase.auth().signInWithPopup(provider).then(function (result) {
+                // This gives you a the Twitter OAuth 1.0 Access Token and Secret.
+                // You can use these server side with your app's credentials to access the Twitter API.
+                var token = result.credential.accessToken;
+                var secret = result.credential.secret;
+
+
+                // The signed-in user info.
+                var user = result.user;
+
+
+                sessionStorage.setItem("AccesTokenForTwitter", result.credential.accessToken);
+                sessionStorage.setItem("SeccretKeyForTwitter", result.credential.secret);
+
+
+
+                console.log(user);
+            }).catch(function (error) {
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                // The email of the user's account used.
+                var email = error.email;
+                // The firebase.auth.AuthCredential type that was used.
+                var credential = error.credential;
+                // ...
+            });
+        }
+
+
+
+        
+
+
+
+    </script>
+
+    <script>
+
+
+        function getAllTweets() {
+            $.ajax({
+                type: 'GET',
+                dataType: 'jsonp',
+                url: 'https://api.twitter.com/1.1/statuses/user_timeline.json',
+                data: { screen_name: 'USERNAME', include_rts: 1 }, //show retweets
+                success: function (data, textStatus, XMLHttpRequest) {
+                    var tmp = false;
+                    var results = $('#twitter_results');
+                    //console.log(data);
+                    for (i in data) {
+                        if (data[i].retweeted_status != null) {
+                            tmp = $('<li class="retweet" itemid="' + data[i].retweeted_status.id_str + '"><div class="dogear"></div><img src="' + data[i].retweeted_status.user.profile_image_url + '" alt="" align="left" width="48" height="48" /><cite>' + data[i].retweeted_status.user.screen_name + '</cite><p>' + data[i].retweeted_status.text.linkify_tweet() + '</p></li>');
+                            if (data[i].retweeted_status.favorited) {
+                                tmp.addClass('favorite');
+                            }
+                        } else {
+                            tmp = $('<li itemid="' + data[i].id_str + '"><div class="dogear"></div><img src="' + data[i].user.profile_image_url + '" alt="" align="left" width="48" height="48" /><cite>' + data[i].user.screen_name + '</cite><p>' + data[i].text.linkify_tweet() + '</p></li>');
+                            if (data[i].favorited) {
+                                tmp.addClass('favorite');
+                            }
+                        }
+
+                        results.append(tmp);
+                    }
+                },
+                error: function (req, status, error) {
+                    alert('error: ' + status);
+                }
+            });
+        }
+    </script>
+
+    <style>
+  
+
+        .split {
+            height: 100%;
+            width: 50%;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+
+        .left {
+            left: 0;
+            background-color: #111;
+        }
+
+        .right {
+            right: 0;
+          
+        }
+
+        .centered {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+            .centered img {
+                width: 150px;
+                border-radius: 50%;
+            }
+    </style>
+ 
+
+     
+
+        <div class="split right">
+            <div class="centered">
+                <button onclick="signin()">
+                    Sign in with twitter
+                </button>
+                <button onclick="getAllTweets()">Show tweets</button>
+
+
+            </div>
+        </div>
+
+
+
+
+    </body>
 </html>

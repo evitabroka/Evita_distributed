@@ -88,6 +88,24 @@
             });
         }
 
+     //posting the tweet
+        $(document).on('click', '#newComment', function (e) {
+            var actualData = $('input[name="postTweet"]').val();
+            $.ajax(
+                {
+                    url: 'https://localhost:44347/twitter/postTweet',
+                    data:
+                    {
+                        'message': actualData
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        console.log("Success");
+                        alert("post added");
+                    }
+                })
+        })
+
     </script>
 </body>
 </html>
