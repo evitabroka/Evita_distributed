@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+
+    <button onclick="signin()">
+        Sign in with twitter
+    </button>
+    <!-- display profile pic  -->
+
+
+
+
+
+
+        <!-- display profile name  -->
+
+    <div id="user-name">
+
+
+    </div>
+
+
+
+
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-app.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/7.15.1/firebase-auth.js"></script>
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+         https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-analytics.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyChPAZs6vf-CC4i7YlMV0iPt08zkDT0qEs",
+            authDomain: "rare-chiller-275016.firebaseapp.com",
+            databaseURL: "https://rare-chiller-275016.firebaseio.com",
+            projectId: "rare-chiller-275016",
+            storageBucket: "rare-chiller-275016.appspot.com",
+            messagingSenderId: "811427766471",
+            appId: "1:811427766471:web:a6eb691bed727e405b9ee2",
+            measurementId: "G-TF0LM1KZDD"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+    </script>
+
+    <script>
+
+
+
+        function signin() {
+
+            var provider = new firebase.auth.TwitterAuthProvider();
+            firebase.auth().useDeviceLanguage();
+            firebase.auth().signInWithPopup(provider).then(function (result) {
+                // This gives you a the Twitter OAuth 1.0 Access Token and Secret.
+                // You can use these server side with your app's credentials to access the Twitter API.
+                var token = result.credential.accessToken;
+                var secret = result.credential.secret;
+                // The signed-in user info.
+                var user = result.user;
+
+                console.log(user);
+            }).catch(function (error) {
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                // The email of the user's account used.
+                var email = error.email;
+                // The firebase.auth.AuthCredential type that was used.
+                var credential = error.credential;
+                // ...
+            });
+        }
+
+    </script>
+</body>
+</html>
